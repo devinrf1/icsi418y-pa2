@@ -1,47 +1,44 @@
 import { useState } from "react";
 
-const emptyForm = {
-  f_name: "",
-  l_name: "",
-  username: "",
-  password: ""
-};
-
 export default function Signup() {
-  const [form, setForm] = useState(emptyForm);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [isError, setIsError] = useState(false);
-
-  function handleChange(event) {
-    setForm({
-      ...form,
-      [event.target.name]: event.target.value
-    });
-  }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setMessage("");
+
+    if (!firstName.trim() || !lastName.trim() || !username.trim() || !password) {
+      setMessage("First name, last name, username, and password are required.");
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:9000/signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(form)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          f_name: firstName.trim(),
+          l_name: lastName.trim(),
+          username: username.trim(),
+          password,
+        }),
       });
 
       const data = await response.json();
-      setIsError(!response.ok);
-      setMessage(data.message);
+      setMessage(data.message || data.error || "The request could not be completed.");
 
       if (response.ok) {
-        setForm(emptyForm);
+        setFirstName("");
+        setLastName("");
+        setUsername("");
+        setPassword("");
       }
     } catch (error) {
-      setIsError(true);
-      setMessage("Could not connect to the server.");
+      console.error("Signup request failed:", error);
+      setMessage("Could not reach the server. Please try again.");
     }
   }
 
@@ -49,48 +46,48 @@ export default function Signup() {
     <section>
       <h2>Sign up</h2>
 
-      <form onSubmit={handleSubmit} noValidate>
-        <label htmlFor="signup-first">First name</label>
-        <input
-          id="signup-first"
-          name="f_name"
-          value={form.f_name}
-          onChange={handleChange}
-        />
+      <form onSubmit={handleSubmit}>
+        <div className="field">
+          <label htmlFor="signup-first-name">First name</label>
+          <input
+            id="signup-first-name"
+            value={firstName}
+            onChange={(event) => setFirstName(event.target.value)}
+          />
+        </div>
 
-        <label htmlFor="signup-last">Last name</label>
-        <input
-          id="signup-last"
-          name="l_name"
-          value={form.l_name}
-          onChange={handleChange}
-        />
+        <div className="field">
+          <label htmlFor="signup-last-name">Last name</label>
+          <input
+            id="signup-last-name"
+            value={lastName}
+            onChange={(event) => setLastName(event.target.value)}
+          />
+        </div>
 
-        <label htmlFor="signup-username">Username</label>
-        <input
-          id="signup-username"
-          name="username"
-          value={form.username}
-          onChange={handleChange}
-        />
+        <div className="field">
+          <label htmlFor="signup-username">Username</label>
+          <input
+            id="signup-username"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+          />
+        </div>
 
-        <label htmlFor="signup-password">Password</label>
-        <input
-          id="signup-password"
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-        />
+        <div className="field">
+          <label htmlFor="signup-password">Password</label>
+          <input
+            id="signup-password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+        </div>
 
         <button type="submit">Sign up</button>
       </form>
 
-      {message && (
-        <p role="status" style={{ color: isError ? "crimson" : "green" }}>
-          {message}
-        </p>
-      )}
+      {message && <p role="status">{message}</p>}
     </section>
   );
 }
