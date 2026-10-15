@@ -23,9 +23,8 @@
 }
 
 .signup-area {
-  margin-top: auto;
-  padding-top: 120px;
-  padding-bottom: 6vh;
+  margin-top: 48px;
+  padding-bottom: 48px;
 }
 
 .account-page form {
@@ -111,4 +110,52 @@
   .signup-area form {
     grid-template-columns: 1fr;
   }
+}
+
+/* Project fields group their labels above their controls. */
+.project-area {
+  padding-bottom: 48px;
+  text-align: left;
+}
+
+.project-area section {
+  margin-top: 40px;
+}
+
+.project-area label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.project-area select,
+.project-area textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #fff;
+  border-radius: 4px;
+  background: #000;
+  color: #fff;
+}
+
+.project-area select:focus-visible,
+.project-area textarea:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.project-area article {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid #fff;
+  overflow-wrap: anywhere;
+}
+
+.project-area li {
+  margin-bottom: 12px;
+}
+
+.project-area button:disabled {
+  opacity: 0.5;
+  cursor: default;
 }

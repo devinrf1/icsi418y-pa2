@@ -1,8 +1,4 @@
 client/node_modules/
 server/node_modules/
 client/dist/
-<<<<<<< HEAD
-server/.env
-=======
-server/.env
->>>>>>> 0a47f6e (Implement signup)
+.env
