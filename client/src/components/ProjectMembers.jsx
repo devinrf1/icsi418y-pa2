@@ -1,8 +1,10 @@
 import { useState } from "react";
+import Backlog from "./Backlog";
 
 export default function ProjectMembers({ projects, users }) {
   const [projectId, setProjectId] = useState("");
   const [userId, setUserId] = useState("");
+  const [stories, setStories] = useState([]);
   const [members, setMembers] = useState([]);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -18,6 +20,13 @@ export default function ProjectMembers({ projects, users }) {
       setMembers([]);
       return false;
     }
+    const storyResponse = await fetch(`http://localhost:9000/projects/${id}/stories`);
+    const storyData = await storyResponse.json();
+    if (!storyResponse.ok) {
+      setMessage(storyData.message);
+      return false;
+    }
+    setStories(storyData);
     setMembers(data);
     setLoaded(true);
     return true;
@@ -33,7 +42,7 @@ export default function ProjectMembers({ projects, users }) {
     if (!id) return;
     setBusy(true);
     try {
-      if (await loadMembers(id)) setMessage("Members loaded.");
+      if (await loadMembers(id)) setMessage("Members and backlog loaded.");
     } catch (error) {
       console.error("Load members error:", error);
       setMessage("Could not reach the server. Select the project again to retry.");
@@ -88,7 +97,7 @@ export default function ProjectMembers({ projects, users }) {
 
   return (
     <section>
-      <h2>Project members</h2>
+      <h2>Project members and backlog</h2>
       <label>
         Project
         <select value={projectId} onChange={selectProject} disabled={busy}>
@@ -98,6 +107,7 @@ export default function ProjectMembers({ projects, users }) {
           ))}
         </select>
       </label>
+      {!projectId && <p>Select a project to view its members and backlog.</p>}
       {busy && <p>Working...</p>}
       {project && loaded && (
         <>
@@ -131,6 +141,10 @@ export default function ProjectMembers({ projects, users }) {
         </>
       )}
       {message && <p role="status">{message}</p>}
+      {project && loaded && (
+        <Backlog key={project._id} project={project} members={members}
+          initialStories={stories} />
+      )}
     </section>
   );
 }
